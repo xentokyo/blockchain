@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 func main() {
@@ -13,6 +14,8 @@ func main() {
 		fmt.Printf("PrevBlockHash: %x\n", block.PrevBlockHash)
 		fmt.Printf("Data: %s\n", block.Data)
 		fmt.Printf("Hash: %x\n", block.Hash)
+		proofOfWork := NewProofOfWork(block)
+		fmt.Printf("PoW: %s\n", strconv.FormatBool(proofOfWork.Validate()))
 		fmt.Println()
 	}
 }
