@@ -66,7 +66,7 @@ func (iterator *BlockchainIterator) Next() *Block {
 	err := iterator.db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(blocksBucket))
 		encodedBlock := bucket.Get(iterator.currentHash)
-		block := DeserializeBlock(encodedBlock)
+		block = DeserializeBlock(encodedBlock)
 
 		return nil
 	})
@@ -100,6 +100,11 @@ func NewBlockchain() *Blockchain {
 				log.Panic(err)
 			}
 
+			err = bucket.Put(genesisBlock.Hash, genesisBlock.Serialize())
+			if err != nil {
+				log.Panic(err)
+			}
+
 			err = bucket.Put([]byte("l"), genesisBlock.Hash)
 			if err != nil {
 				log.Panic(err)
@@ -115,8 +120,8 @@ func NewBlockchain() *Blockchain {
 			log.Panic(err)
 		}
 
-		return Blockchain{ tip, db }
+		return nil
 	})
 
-	return &Blockchain{ []*Block{ NewGenesisBlock() } }
+	return &Blockchain{ tip, db }
 }
