@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
+	"log"
 	"time"
 )
 
@@ -10,6 +13,18 @@ type Block struct {
 	PrevBlockHash []byte
 	Hash []byte
 	Nonce int
+}
+
+func (block *Block) Serialize() []byte {
+	var result bytes.Buffer
+	encoder := gob.NewEncoder(&result)
+
+	err := encoder.Encode(block)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return result.Bytes()
 }
 
 func NewBlock(data string, prevBlockHash []byte) *Block {
@@ -25,4 +40,16 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 
 func NewGenesisBlock() *Block {
 	return NewBlock("This is the genesis block", []byte{})
+}
+
+func DeserializeBlock(data []byte) *Block {
+	var block Block
+	decoder := gob.NewDecoder(bytes.NewReader(data))
+
+	err := decoder.Decode(&block)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return &block
 }
